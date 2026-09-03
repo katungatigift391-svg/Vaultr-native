@@ -1,92 +1,122 @@
 # Vaultr Native (v2) ⚡🎬
 
-> Modern cross-platform native cinema streaming app for Windows & Android, powered by **Tauri 2.0** and **Rust**.
+> Ultra-lightweight, standalone cinema and streaming desktop application powered by **Tauri 2.0** and **Rust**.
 
 [![Rust](https://img.shields.io/badge/Rust-1.77%2B-orange.svg)](https://www.rust-lang.org/)
 [![Tauri](https://img.shields.io/badge/Tauri-v2-blue.svg)](https://v2.tauri.app/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Android-green.svg)]()
+[![Build](https://img.shields.io/badge/Status-Release%20Ready%20(v1.0.0)-success.svg)]()
 
 ---
 
-## ✨ Features in v2 Native
+## ⚡ What is Vaultr Native?
 
-- **Zero Node / Zero npm on End-User PCs:** Compiles to a self-contained, standalone Windows `.exe` and Android `.apk`.
-- **OS-Level Ad & Hijack Interceptor:** Uses native WebView navigation interception (`on_navigation` / `should_override_url_loading`) to deny unauthorized tab redirects and rogue popups before the browser engine can execute them.
-- **MovieBox-Style Cinema Experience:**
-  - Numbered episode tile grid (`01`, `02`, `03`...) with animated audio visualizer.
-  - Multi-audio track switching (Japanese Original vs. English Dub for anime).
-  - In-app trailer lightbox via YouTube NoCookie.
-  - Netflix-style live debounced search and category exploration chips.
-- **Tiny Footprint & Ultra Fast:** Uses the native OS WebView engine (Microsoft Edge WebView2 on Windows, Chromium on Android) for near-instant boot and ultra-low RAM consumption (~15–30MB).
+Vaultr is a zero-bloat, standalone native desktop streaming client. Unlike Electron apps that bundle an entire Chromium browser and consume gigabytes of RAM, Vaultr compiles down to a **single ~10MB executable** with near-instant startup and minimal memory footprint.
+
+### 🌟 Key Highlights
+
+- **100% Standalone Executable (`Vaultr.exe`):**
+  - Zero external folder dependencies: All UI assets, icons, scripts, and stylesheets are embedded directly into the binary at compile time.
+  - Zero runtimes needed: **No Node.js, no npm, no Python, and no dev servers required.**
+  - Runs out-of-the-box on modern Windows 10 (21H2+) and Windows 11 using the built-in Microsoft Edge WebView2 runtime.
+- **In-Memory Native IPC Architecture:**
+  - Operates without any local HTTP server or open loopback ports (`127.0.0.1`), eliminating Windows WebView2 sandbox isolation (`ECONNREFUSED`) issues.
+  - Rust backend fetches TMDB metadata securely over TLS 1.3 via `ureq` and transfers data directly into the frontend over Tauri's high-speed memory bridge.
+- **Engine-Level Ad & Redirect Shield:**
+  - Rust-level navigation interceptor (`on_navigation`) monitors window navigation events.
+  - Automatically denies rogue top-level window redirects and ad hijack attempts before they can execute.
+- **MovieBox Theater & Media Hub:**
+  - Complete catalog discovery, live debounced search, genre filtering, and trending media.
+  - Details overlay with YouTube trailer lightbox, cast overview, and multi-season/episode picker.
+  - Multi-source stream resolver with instant server switching (VidLink fast stream, VidSrc, AutoEmbed, SuperEmbed).
+  - Local persistent watchlist and playback history.
 
 ---
 
-## 🛠️ Development & Building
+## 🚀 Getting Started
+
+### Run the Standalone App (Windows)
+1. Download or locate `Vaultr.exe`.
+2. Double-click to launch immediately — no installer or setup required.
+
+---
+
+## 🛠️ Building From Source
 
 ### Prerequisites
-1. **Rust & Cargo:** [Install Rust](https://www.rust-lang.org/tools/install) (`rustc >= 1.77`).
-2. **Node.js:** For running the Tauri CLI (`npx @tauri-apps/cli`).
-3. **Android Studio** *(Optional, for Android APK builds)*: With Android SDK and NDK installed.
+- [Rust & Cargo](https://www.rust-lang.org/tools/install) (1.77+)
+- [Node.js](https://nodejs.org/) (v18+, only needed for build tooling)
 
----
-
-### Run in Desktop Dev Mode (Windows)
+### 1. Run in Development Mode
 ```bash
-# Launch the native desktop window with live hot-reloading
+# Clone the repository
+git clone https://github.com/katungatigift391-svg/Vaultr-native.git
+cd Vaultr-native
+
+# Launch the native development window with hot reload
+dev.bat
+# or
 npx @tauri-apps/cli dev
 ```
 
-### Build Production Desktop Installer / Executable
+### 2. Compile Standalone Release Binary
 ```bash
-# Compiles optimized standalone .exe and MSI installer into src-tauri/target/release/
-npx @tauri-apps/cli build
+# Clean and compile optimized release binary
+npx @tauri-apps/cli build --no-bundle
+```
+The compiled binary will be generated at:
+```
+src-tauri/target/release/app.exe  ->  Vaultr.exe
 ```
 
 ---
 
-### Android Build (Android Studio & APK)
+## 📱 Mobile (Android) Support
+
+Vaultr Native includes built-in scaffolding for Android devices:
 
 ```bash
-# 1. Initialize Android Studio project files
+# 1. Initialize Android project files
 npx @tauri-apps/cli android init
 
 # 2. Run on connected Android device / emulator
 npx @tauri-apps/cli android dev
 
-# 3. Build signed or release APK
+# 3. Build release APK
 npx @tauri-apps/cli android build
 ```
-You can also open `src-tauri/gen/android` directly inside **Android Studio** to inspect Gradle builds and export APKs.
 
 ---
 
-## 📁 Repository Structure
+## 📁 Repository Architecture
 
 ```text
 vaultr-native/
-├── src-tauri/                 # Native Rust Core & Tauri v2 Configuration
+├── src-tauri/                 # Native Rust Core (Tauri v2)
 │   ├── src/
-│   │   ├── main.rs            # Desktop application entrypoint
-│   │   └── lib.rs             # Tauri lifecycle, IPC & OS security filters
-│   ├── capabilities/          # Security capabilities & permission sets
-│   ├── icons/                 # Multi-resolution app icons (Windows & Android)
-│   ├── Cargo.toml             # Rust dependencies
-│   └── tauri.conf.json        # Window sizes, identifiers, permissions
-└── ui/                        # High-Performance Cinema Frontend (Zero External Dependencies)
-    ├── index.html             # Catalog discovery, trending, Netflix-style search
-    ├── watch.html             # Dedicated cinema theater with MovieBox episode grid
-    ├── css/
-    │   └── main.css           # Dark-mode design system & animations
-    └── js/
-        ├── api.js             # Data layer
-        ├── watch.js           # Theater controller & multi-audio switcher
-        ├── state.js           # Persistent bookmarks & playback memory
-        ├── ui.js              # Modals, lightboxes, and cards
-        └── app.js             # Catalog routing
+│   │   ├── main.rs            # Application entrypoint (suppresses console window)
+│   │   └── lib.rs             # IPC commands (tmdb_get, resolve_streams) & redirect shield
+│   ├── capabilities/          # Tauri v2 security & permission rules
+│   ├── icons/                 # Multi-resolution icons (Windows .ico & Android assets)
+│   ├── Cargo.toml             # Rust manifest (ureq, serde, tauri)
+│   └── tauri.conf.json        # Window configuration & asset bundler
+├── ui/                        # Embedded Cinema Frontend
+│   ├── index.html             # Catalog discovery, trending, search
+│   ├── watch.html             # Cinema theater with multi-server switcher
+│   ├── css/
+│   │   └── main.css           # Premium dark-mode styling & micro-animations
+│   └── js/
+│       ├── api.js             # Tauri IPC bridge adapter
+│       ├── app.js             # Catalog routing & search logic
+│       ├── ui.js              # Details modal, season picker, trailer lightbox
+│       ├── watch.js           # Theater controller & stream manager
+│       └── state.js           # Local bookmarks & preferences
+└── dev.bat                    # Quick-start dev launcher
 ```
 
 ---
 
 ## 📜 License
-ISC — Copyright (c) 2026 katungatigift391-svg
+
+Distributed under the [ISC License](LICENSE). Copyright (c) 2026 katungatigift391-svg.
