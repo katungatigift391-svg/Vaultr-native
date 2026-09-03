@@ -168,8 +168,17 @@ fn handle_tmdb(request: tiny_http::Request, url: &Url, client: &reqwest::blockin
     match client.get(upstream_url.as_str()).send() {
         Ok(resp) => {
             let status = resp.status().as_u16();
-            let body = resp.text().unwrap_or_else(|_| "{}".into());
-            let final_body = format!(r#"{{"success":true,"data":{}}}"#, body);
+            let raw = resp.text().unwrap_or_else(|_| "{}".into());
+
+            // Inject success:true into the TMDB JSON body directly so frontend
+            // can access .results, .genres etc at the top level as before.
+            let final_body = if raw.trim_start().starts_with('{') {
+                // Insert "success":true as first field
+                format!("{{\"success\":true,{}", &raw.trim_start()[1..])
+            } else {
+                format!("{{\"success\":true,\"data\":{}}}", raw)
+            };
+
             let _ = request.respond(json_response(final_body, status));
         }
         Err(e) => {
