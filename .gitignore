@@ -1,8 +1,18 @@
 # Rust & Tauri
 src-tauri/target/
 **/target/
-gen/
 *.exe
+*.apk
+
+# Android Build & Caches
+src-tauri/gen/**/.gradle/
+src-tauri/gen/**/.idea/
+src-tauri/gen/**/build/
+src-tauri/gen/**/local.properties
+src-tauri/gen/**/jniLibs/
+src-tauri/gen/**/.cxx/
+src-tauri/gen/**/generated/
+src-tauri/gen/**/*.iml
 
 # Logs
 *.log

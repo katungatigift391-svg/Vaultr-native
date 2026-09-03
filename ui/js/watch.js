@@ -83,14 +83,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Anti-Redirect Guard
   function setupAntiRedirectGuard() {
-    window.addEventListener('beforeunload', (e) => {
-      if (!isUserNavigating) {
-        e.preventDefault();
-        e.returnValue = 'Playback in progress. Prevented unauthorized redirect.';
-        return e.returnValue;
-      }
-    });
-
     const _originalOpen = window.open;
     window.open = (url, target, features) => {
       console.warn('[Anti-Redirect] Blocked unauthorized window.open:', url);

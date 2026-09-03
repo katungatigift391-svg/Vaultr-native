@@ -261,15 +261,6 @@ const Player = {
   setupRedirectGuard() {
     this.isUserNavigating = false;
 
-    // 1. Trap top-level navigation hijack via beforeunload
-    window.addEventListener('beforeunload', (e) => {
-      if (this.overlay && !this.overlay.classList.contains('hidden') && !this.isUserNavigating) {
-        e.preventDefault();
-        e.returnValue = 'Playback in progress. Blocked attempt to navigate away.';
-        return e.returnValue;
-      }
-    });
-
     // 2. Override window.open to suppress ad popups/popunders
     const _originalOpen = window.open;
     window.open = (url, target, features) => {

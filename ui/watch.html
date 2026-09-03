@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
   <title>Vaultr — Cinema Theater Player</title>
   <meta name="description" content="Dedicated cinema player with multi-source fallback resolvers and MovieBox episode navigation.">
 
@@ -25,32 +25,31 @@
   <!-- Theater Navbar -->
   <header class="watch-navbar">
     <div class="watch-nav-container">
-      <div class="watch-nav-left">
+      <div class="watch-nav-bar">
         <a href="index.html" class="btn-back-browse">
           <i class="ph-bold ph-arrow-left"></i>
-          <span>Back to Browse</span>
+          <span class="back-text">Back to Browse</span>
         </a>
-        <div class="watch-title-block">
-          <h2 class="watch-media-title" id="watch-title">Loading title...</h2>
-          <div class="watch-media-sub" id="watch-sub">
-            <span class="badge-type" id="watch-badge-type">MOVIE</span>
-            <span class="badge-info" id="watch-year">2024</span>
-            <span class="badge-rating" id="watch-rating"><i class="ph-fill ph-star"></i> 8.5</span>
+
+        <div class="watch-controls-right">
+          <div class="server-picker-box">
+            <span class="server-picker-label"><i class="ph ph-hard-drives"></i> Server:</span>
+            <select id="server-select-dropdown" class="server-dropdown" title="Select Stream Source"></select>
           </div>
+
+          <button class="icon-btn" id="btn-theater-focus" title="Focus / Cinema Mode">
+            <i class="ph ph-sun"></i>
+          </button>
         </div>
       </div>
 
-      <div class="watch-nav-right">
-        <!-- Compact Server Selector Dropdown -->
-        <div class="server-picker-box">
-          <span class="server-picker-label"><i class="ph ph-hard-drives"></i> Server:</span>
-          <select id="server-select-dropdown" class="server-dropdown" title="Select Stream Source"></select>
+      <div class="watch-title-block">
+        <h2 class="watch-media-title" id="watch-title">Loading title...</h2>
+        <div class="watch-media-sub" id="watch-sub">
+          <span class="badge-type" id="watch-badge-type">MOVIE</span>
+          <span class="badge-info" id="watch-year">2024</span>
+          <span class="badge-rating" id="watch-rating"><i class="ph-fill ph-star"></i> 8.5</span>
         </div>
-
-        <!-- Cinema Mode Controls -->
-        <button class="icon-btn" id="btn-theater-focus" title="Focus / Cinema Mode">
-          <i class="ph ph-sun"></i>
-        </button>
       </div>
     </div>
   </header>
