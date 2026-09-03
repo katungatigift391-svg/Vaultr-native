@@ -116,8 +116,7 @@ vaultr-native/
 │       ├── ui.js              # Details modal, season picker, trailer lightbox
 │       ├── watch.js           # Theater controller & stream manager
 │       └── state.js           # Local bookmarks & preferences
-├── dev.bat                    # Quick-start desktop dev launcher
-└── start.bat                  # LAN testing launcher
+└── dev.bat                    # Quick-start desktop dev launcher
 ```
 
 ---
