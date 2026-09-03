@@ -17,7 +17,7 @@ android {
     compileSdk = 36
     namespace = "com.vaultr.cinema"
     defaultConfig {
-        manifestPlaceholders["usesCleartextTraffic"] = "false"
+        manifestPlaceholders["usesCleartextTraffic"] = "true"
         applicationId = "com.vaultr.cinema"
         minSdk = 24
         targetSdk = 36
@@ -34,7 +34,7 @@ android {
         }
         getByName("release") {
             signingConfig = signingConfigs.getByName("debug")
-            manifestPlaceholders["usesCleartextTraffic"] = "false"
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
             isMinifyEnabled = false
             proguardFiles(
                 *fileTree(".") { include("**/*.pro") }
