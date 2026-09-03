@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     nativePlayerBox.classList.add('active');
     embedIframe.src = '';
 
-    const proxiedUrl = `/api/proxy/hls?url=${encodeURIComponent(streamUrl)}${referer ? `&referer=${encodeURIComponent(referer)}` : ''}`;
+    const proxiedUrl = `http://127.0.0.1:3000/api/proxy/hls?url=${encodeURIComponent(streamUrl)}${referer ? `&referer=${encodeURIComponent(referer)}` : ''}`;
 
     if (Hls.isSupported() && streamUrl.includes('.m3u8')) {
       if (hlsInstance) hlsInstance.destroy();

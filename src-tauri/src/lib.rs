@@ -1,5 +1,10 @@
+mod server;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+  // Start native embedded backend (TMDB API, stream resolvers & HLS proxy)
+  server::start();
+
   tauri::Builder::default()
     .setup(|app| {
       if cfg!(debug_assertions) {

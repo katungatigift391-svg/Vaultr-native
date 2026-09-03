@@ -160,7 +160,7 @@ const Player = {
     this.nativeBox.classList.add('active');
     this.iframeEl.src = '';
 
-    const proxiedUrl = `/api/proxy/hls?url=${encodeURIComponent(streamUrl)}${referer ? `&referer=${encodeURIComponent(referer)}` : ''}`;
+    const proxiedUrl = `http://127.0.0.1:3000/api/proxy/hls?url=${encodeURIComponent(streamUrl)}${referer ? `&referer=${encodeURIComponent(referer)}` : ''}`;
 
     if (Hls.isSupported() && streamUrl.includes('.m3u8')) {
       this.hlsInstance = new Hls({
