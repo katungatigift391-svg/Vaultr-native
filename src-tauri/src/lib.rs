@@ -121,7 +121,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![tmdb_get, resolve_streams])
         .setup(|app| {
             // Construct Main Cinema Window with OS-Level Redirect & Hijack Shield
-            let _window = tauri::WebviewWindowBuilder::new(
+            #[cfg(desktop)]
+            let builder = tauri::WebviewWindowBuilder::new(
                 app,
                 "main",
                 tauri::WebviewUrl::App("index.html".into()),
@@ -130,7 +131,16 @@ pub fn run() {
             .inner_size(1280.0, 820.0)
             .min_inner_size(960.0, 640.0)
             .center()
-            .resizable(true)
+            .resizable(true);
+
+            #[cfg(mobile)]
+            let builder = tauri::WebviewWindowBuilder::new(
+                app,
+                "main",
+                tauri::WebviewUrl::App("index.html".into()),
+            );
+
+            let _window = builder
             .on_navigation(|url| {
                 let scheme = url.scheme();
                 let host = url.host_str().unwrap_or("");
