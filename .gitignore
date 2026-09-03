@@ -12,6 +12,7 @@ src-tauri/gen/**/local.properties
 src-tauri/gen/**/jniLibs/
 src-tauri/gen/**/.cxx/
 src-tauri/gen/**/generated/
+src-tauri/gen/**/assets/
 src-tauri/gen/**/*.iml
 
 # Logs

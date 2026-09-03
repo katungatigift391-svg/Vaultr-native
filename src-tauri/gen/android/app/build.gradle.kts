@@ -62,3 +62,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-process:2.8.7")
     implementation(project(":tauri-android"))
 }
+
+tasks.register<Copy>("copyUiAssets") {
+    from("../../../../ui")
+    into("src/main/assets")
+}
+
+tasks.named("preBuild") {
+    dependsOn("copyUiAssets")
+}
