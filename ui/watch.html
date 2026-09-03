@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vaultr — Cinema Theater Player</title>
+  <meta name="description" content="Dedicated cinema player with multi-source fallback resolvers and MovieBox episode navigation.">
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- HLS.js -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="theme-dark watch-page">
+
+  <!-- Theater Navbar -->
+  <header class="watch-navbar">
+    <div class="watch-nav-container">
+      <div class="watch-nav-left">
+        <a href="/" class="btn-back-browse">
+          <i class="ph-bold ph-arrow-left"></i>
+          <span>Back to Browse</span>
+        </a>
+        <div class="watch-title-block">
+          <h2 class="watch-media-title" id="watch-title">Loading title...</h2>
+          <div class="watch-media-sub" id="watch-sub">
+            <span class="badge-type" id="watch-badge-type">MOVIE</span>
+            <span class="badge-info" id="watch-year">2024</span>
+            <span class="badge-rating" id="watch-rating"><i class="ph-fill ph-star"></i> 8.5</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="watch-nav-right">
+        <!-- Compact Server Selector Dropdown -->
+        <div class="server-picker-box">
+          <span class="server-picker-label"><i class="ph ph-hard-drives"></i> Server:</span>
+          <select id="server-select-dropdown" class="server-dropdown" title="Select Stream Source"></select>
+        </div>
+
+        <!-- Cinema Mode Controls -->
+        <button class="icon-btn" id="btn-theater-focus" title="Focus / Cinema Mode">
+          <i class="ph ph-sun"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Theater Layout -->
+  <main class="watch-main-layout">
+    <div class="watch-grid-stage">
+      
+      <!-- Left Column: Video Viewport + Controls + Overview -->
+      <div class="watch-player-col">
+        <!-- Video Viewport -->
+        <div class="player-theater-viewport" id="player-theater-viewport">
+          
+          <!-- Native HTML5 / HLS.js Player -->
+          <div class="native-player-box" id="native-player-box">
+            <video id="native-video" controls autoplay playsinline></video>
+          </div>
+
+          <!-- Clean Embed Player -->
+          <div class="embed-player-box active" id="embed-player-box">
+            <iframe 
+              id="embed-iframe" 
+              src="" 
+              allowfullscreen="true" 
+              webkitallowfullscreen="true" 
+              mozallowfullscreen="true"
+              referrerpolicy="no-referrer"
+              allow="autoplay; encrypted-media; fullscreen; picture-in-picture; accelerometer; gyroscope; clipboard-write">
+            </iframe>
+          </div>
+
+        </div>
+
+        <!-- Player Underbar Controls (Prev/Next Episode + Server Info) -->
+        <div class="player-underbar">
+          <div class="underbar-left">
+            <button class="underbar-btn hidden" id="btn-prev-ep">
+              <i class="ph-bold ph-caret-left"></i> Previous Episode
+            </button>
+            <button class="underbar-btn hidden" id="btn-next-ep">
+              Next Episode <i class="ph-bold ph-caret-right"></i>
+            </button>
+            <!-- Audio Track Selector Pill -->
+            <div class="audio-picker-pill" id="audio-picker-pill">
+              <i class="ph-bold ph-speaker-high"></i>
+              <select id="audio-track-dropdown" class="audio-dropdown" title="Select Audio Track">
+                <option value="-1">Audio: Default</option>
+              </select>
+            </div>
+            <span class="playback-notice" id="playback-notice">
+              <i class="ph ph-shield-check"></i> Playing via clean resolver
+            </span>
+          </div>
+
+          <div class="underbar-right">
+            <button class="underbar-action-btn" id="btn-trailer-watch">
+              <i class="ph-fill ph-youtube-logo"></i> Watch Trailer
+            </button>
+            <button class="underbar-action-btn" id="btn-add-watchlist-watch">
+              <i class="ph ph-bookmark-simple"></i> Add to Watchlist
+            </button>
+            <button class="underbar-action-btn" id="btn-reload-stream" title="Reload Current Stream">
+              <i class="ph ph-arrows-clockwise"></i> Reload
+            </button>
+          </div>
+        </div>
+
+        <!-- Details & Synopsis Section -->
+        <div class="watch-details-card">
+          <div class="details-text-col">
+            <h3 class="details-heading">Overview</h3>
+            <p class="details-synopsis" id="watch-synopsis">Loading overview...</p>
+            <div class="details-genres-list" id="watch-genres"></div>
+          </div>
+          <div class="details-sidebar-info">
+            <div class="meta-info-item">
+              <span class="meta-label">Original Language</span>
+              <span class="meta-val" id="watch-lang">English</span>
+            </div>
+            <div class="meta-info-item">
+              <span class="meta-label">Status</span>
+              <span class="meta-val" id="watch-status">Released</span>
+            </div>
+            <div class="meta-info-item">
+              <span class="meta-label">Cast</span>
+              <span class="meta-val" id="watch-cast">Loading...</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: MovieBox-Style Episode Matrix & Resource Panel -->
+      <div class="watch-sidebar-col">
+        
+        <!-- MovieBox Resources Panel -->
+        <div class="moviebox-card resource-card">
+          <div class="card-header-row">
+            <div class="header-title-box">
+              <span class="mini-label">ACTIVE SERVER</span>
+              <h4 class="active-server-name" id="label-active-server">VidLink Clean</h4>
+            </div>
+            <button class="btn-switch-server" id="btn-open-server-modal">
+              <i class="ph ph-arrows-left-right"></i> Switch
+            </button>
+          </div>
+          <div class="server-status-pill-row" id="server-status-pill-row">
+            <span class="pill-status-dot"></span>
+            <span class="pill-status-text" id="pill-status-text">High-Speed CDN • Ad-Light</span>
+          </div>
+          <div class="server-status-pill-row" id="audio-status-pill-row" style="margin-top: 6px;">
+            <span class="pill-status-dot audio-dot"></span>
+            <span class="pill-status-text" id="audio-status-text">Audio: Stereo (Default)</span>
+          </div>
+        </div>
+
+        <!-- MovieBox TV Episodes Matrix (Shown for TV Series) -->
+        <div class="moviebox-card episodes-card hidden" id="tv-episodes-panel">
+          <div class="episodes-header-row">
+            <h4 class="episodes-heading"><i class="ph ph-squares-four"></i> Episodes</h4>
+            <!-- Season Dropdown (MovieBox Style) -->
+            <div class="season-select-wrapper">
+              <select id="season-picker" class="moviebox-season-dropdown"></select>
+            </div>
+          </div>
+
+          <div class="episode-stats-row">
+            <span id="episodes-count-text">Episodes</span>
+            <span class="auto-next-label">
+              <input type="checkbox" id="check-auto-next" checked>
+              <label for="check-auto-next">Auto-Next</label>
+            </span>
+          </div>
+
+          <!-- Numbered Episode Tiles Matrix (01, 02, 03 ...) -->
+          <div class="moviebox-tile-matrix" id="moviebox-tile-matrix">
+            <div class="loading-spinner"><i class="ph ph-spinner ph-spin"></i></div>
+          </div>
+        </div>
+
+        <!-- Recommended Similar Titles -->
+        <div class="moviebox-card recommendations-card">
+          <h4 class="episodes-heading"><i class="ph ph-sparkle"></i> Similar Titles</h4>
+          <div class="mini-recommendations-list" id="mini-recommendations-list">
+            <div class="loading-spinner"><i class="ph ph-spinner ph-spin"></i></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Server Switching Modal -->
+  <div class="modal-overlay hidden" id="server-modal">
+    <div class="modal-card modal-sm">
+      <button class="modal-close" id="server-modal-close"><i class="ph ph-x"></i></button>
+      <div class="modal-body">
+        <h3 class="modal-title"><i class="ph ph-plugs-connected"></i> Select Stream Server</h3>
+        <p class="modal-synopsis">Choose from available multi-source providers ranked by cleanliness.</p>
+        <div class="server-choice-list" id="server-choice-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- In-App Trailer Lightbox Modal -->
+  <div class="modal-overlay hidden" id="trailer-modal">
+    <div class="modal-card trailer-modal-card">
+      <button class="modal-close" id="trailer-modal-close"><i class="ph ph-x"></i></button>
+      <div class="trailer-viewport">
+        <iframe 
+          id="trailer-iframe" 
+          src="" 
+          allowfullscreen 
+          allow="autoplay; encrypted-media; picture-in-picture">
+        </iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- App Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/watch.js"></script>
+</body>
+</html>

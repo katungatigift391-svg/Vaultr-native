@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vaultr — Ultimate Cinema & Media Hub</title>
+  <meta name="description" content="Self-hosted, ultra-fast streaming platform with multi-source fallback resolvers and high-performance playback.">
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- HLS.js -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
+
+  <!-- Custom Design System Stylesheet -->
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="theme-dark">
+  
+  <!-- Navigation Bar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <div class="nav-left">
+        <a href="/" class="brand-logo" id="nav-brand">
+          <span class="logo-icon"><i class="ph-bold ph-film-slate"></i></span>
+          <span class="logo-text">VAULTR<span class="logo-accent">.</span></span>
+        </a>
+        <nav class="nav-links">
+          <button class="nav-btn active" data-view="home"><i class="ph ph-house"></i> Home</button>
+          <button class="nav-btn" data-view="movies"><i class="ph ph-film-strip"></i> Movies</button>
+          <button class="nav-btn" data-view="tv"><i class="ph ph-television"></i> TV Shows</button>
+          <button class="nav-btn" data-view="search"><i class="ph ph-magnifying-glass"></i> Search</button>
+          <button class="nav-btn" data-view="watchlist"><i class="ph ph-bookmark-simple"></i> Watchlist</button>
+        </nav>
+      </div>
+
+      <div class="nav-right">
+        <!-- Quick Search Bar (Clicks into Search View) -->
+        <div class="search-box" id="search-box">
+          <i class="ph ph-magnifying-glass search-icon"></i>
+          <input type="text" id="search-input" placeholder="Titles, genres, cast..." autocomplete="off">
+          <button class="search-clear hidden" id="search-clear"><i class="ph ph-x"></i></button>
+          <div class="search-dropdown hidden" id="search-results"></div>
+        </div>
+
+        <button class="icon-btn" id="btn-settings" title="Settings & Server Info">
+          <i class="ph ph-gear"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Content Area -->
+  <main id="app-main">
+    
+    <!-- Hero Showcase Section -->
+    <section class="hero-section" id="hero-section">
+      <div class="hero-backdrop" id="hero-backdrop"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="hero-badge" id="hero-badge"><i class="ph-fill ph-fire"></i> FEATURED TODAY</div>
+        <h1 class="hero-title" id="hero-title">Loading Featured Title...</h1>
+        <div class="hero-meta" id="hero-meta">
+          <span class="rating-tag" id="hero-rating"><i class="ph-fill ph-star"></i> 8.5</span>
+          <span class="meta-tag" id="hero-year">2024</span>
+          <span class="meta-tag" id="hero-type">MOVIE</span>
+          <span class="meta-tag" id="hero-genre">Action • Sci-Fi</span>
+        </div>
+        <p class="hero-overview" id="hero-overview">Explore movies and TV series with real-time multi-source streaming resolvers.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" id="hero-play-btn">
+            <i class="ph-fill ph-play"></i> Watch Now
+          </button>
+          <button class="btn btn-secondary btn-lg" id="hero-details-btn">
+            <i class="ph ph-info"></i> More Details
+          </button>
+          <button class="icon-btn-lg" id="hero-watchlist-btn" title="Add to Watchlist">
+            <i class="ph ph-plus"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content Shelves / Carousels Container -->
+    <div class="content-wrapper" id="content-wrapper">
+      
+      <!-- Continue Watching Shelf -->
+      <section class="shelf-section hidden" id="shelf-continue">
+        <div class="shelf-header">
+          <h2 class="shelf-title"><i class="ph ph-clock-counter-clockwise"></i> Continue Watching</h2>
+        </div>
+        <div class="shelf-grid" id="grid-continue"></div>
+      </section>
+
+      <!-- Trending Movies & TV -->
+      <section class="shelf-section" id="shelf-trending">
+        <div class="shelf-header">
+          <h2 class="shelf-title"><i class="ph-fill ph-trend-up"></i> Trending This Week</h2>
+          <div class="shelf-tabs">
+            <button class="tab-pill active" data-type="all">All</button>
+            <button class="tab-pill" data-type="movie">Movies</button>
+            <button class="tab-pill" data-type="tv">TV Shows</button>
+          </div>
+        </div>
+        <div class="shelf-carousel" id="carousel-trending">
+          <div class="loading-spinner"><i class="ph ph-spinner ph-spin"></i></div>
+        </div>
+      </section>
+
+      <!-- Popular Movies -->
+      <section class="shelf-section" id="shelf-popular-movies">
+        <div class="shelf-header">
+          <h2 class="shelf-title"><i class="ph ph-film-strip"></i> Popular Movies</h2>
+        </div>
+        <div class="shelf-carousel" id="carousel-popular-movies"></div>
+      </section>
+
+      <!-- Popular TV Series -->
+      <section class="shelf-section" id="shelf-popular-tv">
+        <div class="shelf-header">
+          <h2 class="shelf-title"><i class="ph ph-television"></i> Binge-Worthy TV Shows</h2>
+        </div>
+        <div class="shelf-carousel" id="carousel-popular-tv"></div>
+      </section>
+
+      <!-- Genre Collections (Action / Sci-Fi / Anime / Horror) -->
+      <section class="shelf-section" id="shelf-genre-action">
+        <div class="shelf-header">
+          <h2 class="shelf-title"><i class="ph ph-lightning"></i> Action Blockbusters</h2>
+        </div>
+        <div class="shelf-carousel" id="carousel-genre-action"></div>
+      </section>
+
+      <section class="shelf-section" id="shelf-genre-scifi">
+        <div class="shelf-header">
+          <h2 class="shelf-title"><i class="ph ph-planet"></i> Sci-Fi & Fantasy</h2>
+        </div>
+        <div class="shelf-carousel" id="carousel-genre-scifi"></div>
+      </section>
+
+      <section class="shelf-section" id="shelf-genre-animation">
+        <div class="shelf-header">
+          <h2 class="shelf-title"><i class="ph ph-sparkle"></i> Animation & Anime</h2>
+        </div>
+        <div class="shelf-carousel" id="carousel-genre-animation"></div>
+      </section>
+
+    </div>
+
+    <!-- Dedicated Netflix-Style Search Page View -->
+    <div class="search-view-wrapper hidden" id="search-view-wrapper">
+      <div class="search-hero-box">
+        <h1 class="search-page-title">Explore Catalog</h1>
+        <div class="search-bar-large">
+          <i class="ph ph-magnifying-glass"></i>
+          <input type="text" id="search-page-input" placeholder="Search by movie title, TV series, or actors..." autocomplete="off">
+          <button class="search-clear-large hidden" id="search-page-clear"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="search-filter-pills" id="search-type-pills">
+          <button class="pill-chip active" data-filter="all">All</button>
+          <button class="pill-chip" data-filter="movie">Movies</button>
+          <button class="pill-chip" data-filter="tv">TV Shows</button>
+        </div>
+      </div>
+
+      <!-- Quick Genre Exploration Chips -->
+      <div class="search-genres-shelf" id="search-genres-shelf">
+        <span class="genre-shelf-label">Popular Categories:</span>
+        <div class="genre-chips-row" id="search-genre-chips"></div>
+      </div>
+
+      <!-- Search Results Header & Grid -->
+      <div class="search-results-section">
+        <div class="search-results-header">
+          <h3 id="search-results-heading">Popular Discoveries</h3>
+          <span class="results-count-text" id="search-results-count"></span>
+        </div>
+        <div class="media-grid" id="search-results-grid"></div>
+      </div>
+    </div>
+
+    <!-- Dedicated Grid Views (Movies / TV / Watchlist) -->
+    <div class="grid-view-wrapper hidden" id="grid-view-wrapper">
+      <div class="view-header">
+        <h1 class="view-title" id="view-title">Browse Movies</h1>
+        <div class="view-filters" id="view-filters">
+          <select id="genre-filter-select" class="filter-select">
+            <option value="">All Genres</option>
+          </select>
+          <select id="sort-filter-select" class="filter-select">
+            <option value="popularity.desc">Most Popular</option>
+            <option value="vote_average.desc">Highest Rated</option>
+            <option value="primary_release_date.desc">Newest Release</option>
+          </select>
+        </div>
+      </div>
+      <div class="media-grid" id="main-media-grid"></div>
+      <div class="pagination-wrapper" id="pagination-wrapper">
+        <button class="btn btn-secondary" id="btn-prev-page"><i class="ph ph-caret-left"></i> Previous</button>
+        <span class="page-indicator" id="page-indicator">Page 1</span>
+        <button class="btn btn-secondary" id="btn-next-page">Next <i class="ph ph-caret-right"></i></button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Media Details Modal -->
+  <div class="modal-overlay hidden" id="details-modal">
+    <div class="modal-card">
+      <button class="modal-close" id="modal-close-btn"><i class="ph ph-x"></i></button>
+      
+      <div class="modal-hero">
+        <img src="" alt="Backdrop" class="modal-backdrop-img" id="modal-backdrop">
+        <div class="modal-hero-gradient"></div>
+        <div class="modal-hero-content">
+          <h2 class="modal-title" id="modal-title">Movie Title</h2>
+          <div class="modal-meta-row">
+            <span class="rating-tag" id="modal-rating"><i class="ph-fill ph-star"></i> 8.9</span>
+            <span class="meta-tag" id="modal-year">2024</span>
+            <span class="meta-tag" id="modal-runtime">2h 15m</span>
+            <span class="meta-tag" id="modal-type-tag">MOVIE</span>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-primary btn-lg" id="modal-play-btn">
+              <i class="ph-fill ph-play"></i> Watch in Theater
+            </button>
+            <button class="btn btn-secondary" id="modal-watchlist-btn">
+              <i class="ph ph-bookmark-simple"></i> Add to Watchlist
+            </button>
+            <button class="btn btn-glass" id="modal-trailer-btn">
+              <i class="ph-fill ph-youtube-logo"></i> Watch Trailer
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-layout-split">
+          <div class="modal-left">
+            <h3 class="section-heading">Overview</h3>
+            <p class="modal-synopsis" id="modal-synopsis">Synopsis description...</p>
+            
+            <div class="modal-genres-list" id="modal-genres-list"></div>
+
+            <!-- TV Season / Episode Navigator -->
+            <div class="tv-series-navigator hidden" id="tv-series-navigator">
+              <div class="season-picker-row">
+                <h3 class="section-heading"><i class="ph ph-list-numbers"></i> Episodes</h3>
+                <select id="season-selector" class="season-select"></select>
+              </div>
+              <div class="episodes-grid" id="episodes-grid"></div>
+            </div>
+          </div>
+
+          <div class="modal-right">
+            <div class="info-card">
+              <h4>Details</h4>
+              <div class="info-item">
+                <span class="label">Status</span>
+                <span class="value" id="info-status">Released</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Original Language</span>
+                <span class="value" id="info-lang">English</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Cast</span>
+                <span class="value cast-names" id="info-cast">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- In-App Trailer Lightbox Modal -->
+  <div class="modal-overlay hidden" id="trailer-modal">
+    <div class="modal-card trailer-modal-card">
+      <button class="modal-close" id="trailer-modal-close"><i class="ph ph-x"></i></button>
+      <div class="trailer-viewport">
+        <iframe 
+          id="trailer-iframe" 
+          src="" 
+          allowfullscreen 
+          allow="autoplay; encrypted-media; picture-in-picture">
+        </iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings & Server Info Modal -->
+  <div class="modal-overlay hidden" id="settings-modal">
+    <div class="modal-card modal-sm">
+      <button class="modal-close" id="settings-close-btn"><i class="ph ph-x"></i></button>
+      <div class="modal-body">
+        <h2 class="modal-title"><i class="ph ph-sliders"></i> Platform Settings</h2>
+        <p class="modal-synopsis">Local Streaming Hub Configuration</p>
+        
+        <div class="settings-group">
+          <label>Local Server Status</label>
+          <div class="status-indicator">
+            <span class="status-dot online"></span>
+            <span class="status-text" id="server-status-text">Connected (http://localhost:3000)</span>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label for="custom-tmdb-key">Custom TMDB API Key (Optional)</label>
+          <input type="text" id="custom-tmdb-key" placeholder="Enter custom TMDB v3 API Key" class="settings-input">
+          <small>Leave empty to use built-in high-availability key.</small>
+        </div>
+
+        <div class="settings-group">
+          <button class="btn btn-secondary w-100" id="btn-clear-cache">
+            <i class="ph ph-trash"></i> Clear Local Watch History & Cache
+          </button>
+        </div>
+
+        <div class="modal-actions mt-4">
+          <button class="btn btn-primary w-100" id="btn-save-settings">Save & Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Application Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
