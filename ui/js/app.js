@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Hero Play navigates to dedicated watch page
     playBtn.onclick = () => {
-      window.location.href = `/watch.html?type=${mediaType}&id=${item.id}${mediaType === 'tv' ? '&season=1&episode=1' : ''}`;
+      window.location.href = `watch.html?type=${mediaType}&id=${item.id}${mediaType === 'tv' ? '&season=1&episode=1' : ''}`;
     };
 
     detailsBtn.onclick = () => {

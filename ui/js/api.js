@@ -36,11 +36,13 @@ const API = {
   },
 
   async getDetails(type, id) {
-    return await this.tmdb(`/${type}/${id}`, { append_to_response: 'videos,credits,similar,recommendations' });
+    const raw = await this.tmdb(`/${type}/${id}`, { append_to_response: 'videos,credits,similar,recommendations' });
+    return { success: true, data: raw, ...raw };
   },
 
   async getSeason(id, seasonNumber) {
-    return await this.tmdb(`/tv/${id}/season/${seasonNumber}`);
+    const raw = await this.tmdb(`/tv/${id}/season/${seasonNumber}`);
+    return { success: true, data: raw, ...raw };
   },
 
   async getGenres() {
@@ -49,12 +51,34 @@ const API = {
 
   // Native Stream Resolver Endpoint
   async resolveStreams(type, id, season = 1, episode = 1) {
-    return await this._invoke('resolve_streams', {
+    const res = await this._invoke('resolve_streams', {
       mediaType: type,
       id: String(id),
       season: String(season),
       episode: String(episode)
     });
+
+    const sources = res?.sources || [];
+    const primaryEmbed = sources.length > 0 ? sources[0].url : (
+      type === 'tv'
+        ? `https://vidlink.pro/tv/${id}/${season}/${episode}`
+        : `https://vidlink.pro/movie/${id}`
+    );
+    const dataObj = {
+      mediaType: type,
+      id: String(id),
+      season: Number(season),
+      episode: Number(episode),
+      primaryEmbed,
+      activeSources: sources,
+      sources
+    };
+
+    return {
+      success: true,
+      data: dataObj,
+      ...dataObj
+    };
   },
 
   // Health check

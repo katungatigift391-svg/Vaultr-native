@@ -34,7 +34,7 @@ const UI = {
     card.innerHTML = `
       <img src="${poster}" alt="${title}" class="media-card-poster" loading="lazy">
       <div class="media-card-overlay">
-        <a href="/watch.html?type=${mediaType}&id=${item.id}${mediaType === 'tv' ? '&season=1&episode=1' : ''}" class="card-play-btn" title="Watch in Theater">
+        <a href="watch.html?type=${mediaType}&id=${item.id}${mediaType === 'tv' ? '&season=1&episode=1' : ''}" class="card-play-btn" title="Watch in Theater">
           <i class="ph-fill ph-play"></i>
         </a>
       </div>
@@ -200,7 +200,7 @@ const UI = {
 
       // Play button opens dedicated watch page
       playBtn.onclick = () => {
-        window.location.href = `/watch.html?type=${type}&id=${data.id}${type === 'tv' ? '&season=1&episode=1' : ''}`;
+        window.location.href = `watch.html?type=${type}&id=${data.id}${type === 'tv' ? '&season=1&episode=1' : ''}`;
       };
 
       // TV Series Seasons & Episodes
@@ -240,7 +240,7 @@ const UI = {
                 `;
 
                 epCard.onclick = () => {
-                  window.location.href = `/watch.html?type=tv&id=${data.id}&season=${seasonNum}&episode=${ep.episode_number}`;
+                  window.location.href = `watch.html?type=tv&id=${data.id}&season=${seasonNum}&episode=${ep.episode_number}`;
                 };
 
                 epGrid.appendChild(epCard);
